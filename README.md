@@ -55,7 +55,7 @@ The first step will be to insert the protein into the membrane. We will do this 
 ```
 python memb_builder.py --protein DotG.pdb --lipids POPC POPE POPG --lipid_ratios 3 5 2 --output output.pdb --box_size 300 --z -90 --buffer 1 --z-buffer 4
 ```
-For specific details on the command line options, see [Command Line Options + Customization](#command-line-options--customization-(md_builder.py)) in the [Appendix](#appendix) at the bottom of the tutorial.
+For specific details on the command line options, see [Command Line Options + Customization](#command-line-options--customization-md_builderpy) in the [Appendix](#appendix) at the bottom of the tutorial.
 
 For the purpose of this tutorial, the parameters are defined as follows: 
 

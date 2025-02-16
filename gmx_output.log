@@ -1,0 +1,101 @@
+                      :-) GROMACS - gmx editconf, 2023 (-:
+
+Executable:   /Users/caysonhamilton/Gromacs/gromacs-2023/build/bin/gmx
+Data prefix:  /Users/caysonhamilton/Gromacs/gromacs-2023 (source tree)
+Working dir:  /Users/caysonhamilton/Biophysics/T4SS/memb_tutorial
+Command line:
+  gmx editconf -f POPC.pdb -o POPC.pdb -center 0 0 0
+
+
+Back Off! I just backed up POPC.pdb to ./#POPC.pdb.1#
+
+GROMACS reminds you: "I'd Be Water If I Could" (Red Hot Chili Peppers)
+
+Note that major changes are planned in future for editconf, to improve usability and utility.
+Read 134 atoms
+No velocities found
+    system size :  0.993  0.929  1.919 (nm)
+    center      :  0.000  0.000 -0.000 (nm)
+    box vectors :  0.000  0.000  0.000 (nm)
+    box angles  :   0.00   0.00   0.00 (degrees)
+    box volume  :   0.00               (nm^3)
+    shift       : -0.000 -0.000  0.000 (nm)
+new center      : -0.000 -0.000  0.000 (nm)
+
+WARNING: Empty diagonal for a 3-dimensional periodic box
+See the GROMACS manual for a description of the requirements that
+must be satisfied by descriptions of simulation cells.
+                      :-) GROMACS - gmx editconf, 2023 (-:
+
+Executable:   /Users/caysonhamilton/Gromacs/gromacs-2023/build/bin/gmx
+Data prefix:  /Users/caysonhamilton/Gromacs/gromacs-2023 (source tree)
+Working dir:  /Users/caysonhamilton/Biophysics/T4SS/memb_tutorial
+Command line:
+  gmx editconf -f POPE.pdb -o POPE.pdb -center 0 0 0
+
+
+Back Off! I just backed up POPE.pdb to ./#POPE.pdb.1#
+
+GROMACS reminds you: "I'd Be Water If I Could" (Red Hot Chili Peppers)
+
+Note that major changes are planned in future for editconf, to improve usability and utility.
+Read 125 atoms
+No velocities found
+    system size :  1.052  1.046  2.394 (nm)
+    center      :  0.000 -0.000 -0.000 (nm)
+    box vectors :  0.000  0.000  0.000 (nm)
+    box angles  :   0.00   0.00   0.00 (degrees)
+    box volume  :   0.00               (nm^3)
+    shift       : -0.000  0.000  0.000 (nm)
+new center      : -0.000 -0.000  0.000 (nm)
+
+WARNING: Empty diagonal for a 3-dimensional periodic box
+See the GROMACS manual for a description of the requirements that
+must be satisfied by descriptions of simulation cells.
+                      :-) GROMACS - gmx editconf, 2023 (-:
+
+Executable:   /Users/caysonhamilton/Gromacs/gromacs-2023/build/bin/gmx
+Data prefix:  /Users/caysonhamilton/Gromacs/gromacs-2023 (source tree)
+Working dir:  /Users/caysonhamilton/Biophysics/T4SS/memb_tutorial
+Command line:
+  gmx editconf -f POPG.pdb -o POPG.pdb -center 0 0 0
+
+
+Back Off! I just backed up POPG.pdb to ./#POPG.pdb.1#
+
+GROMACS reminds you: "I'd Be Water If I Could" (Red Hot Chili Peppers)
+
+Note that major changes are planned in future for editconf, to improve usability and utility.
+Read 127 atoms
+No velocities found
+    system size :  0.949  1.077  2.024 (nm)
+    center      : -0.000 -0.000  0.000 (nm)
+    box vectors :  0.000  0.000  0.000 (nm)
+    box angles  :   0.00   0.00   0.00 (degrees)
+    box volume  :   0.00               (nm^3)
+    shift       :  0.000  0.000 -0.000 (nm)
+new center      :  0.000  0.000 -0.000 (nm)
+
+WARNING: Empty diagonal for a 3-dimensional periodic box
+See the GROMACS manual for a description of the requirements that
+must be satisfied by descriptions of simulation cells.
+                      :-) GROMACS - gmx editconf, 2023 (-:
+
+Executable:   /Users/caysonhamilton/Gromacs/gromacs-2023/build/bin/gmx
+Data prefix:  /Users/caysonhamilton/Gromacs/gromacs-2023 (source tree)
+Working dir:  /Users/caysonhamilton/Biophysics/T4SS/memb_tutorial
+Command line:
+  gmx editconf -f delete_me.pdb -o delete_me.pdb
+
+
+Back Off! I just backed up delete_me.pdb to ./#delete_me.pdb.1#
+
+GROMACS reminds you: "Considering the current sad state of our computer programs, software development is clearly still a black art, and cannot yet be called an engineering discipline." (William Jefferson Clinton)
+
+Note that major changes are planned in future for editconf, to improve usability and utility.
+Read 290664 atoms
+No velocities found
+
+WARNING: Empty diagonal for a 3-dimensional periodic box
+See the GROMACS manual for a description of the requirements that
+must be satisfied by descriptions of simulation cells.

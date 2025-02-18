@@ -53,7 +53,7 @@ conda activate memb_builder
 
 The first step will be to insert the protein into the membrane. We will do this using the provided python script `memb_builder.py`. This script is best run through the command line and includes multiple different command line options in order to customize the embedding. When complete, the entire command will look something like the following, and is the command we will use in this tutorial. 
 ```
-python memb_builder.py --protein DotG.pdb --lipids POPC POPE POPG --lipid_ratios 3 5 2 --output output.pdb --box_size 300 --z -90 --buffer 1 --z-buffer 4
+python memb_builder.py --protein DotG.pdb --lipids POPC POPE POPG --lipid_ratios 3 5 2 --output DotG_membrane.pdb --box_size 300 --z -90 --buffer 1 --z-buffer 4
 ```
 For specific details on the command line options, see [Command Line Options + Customization](#command-line-options--customization-md_builderpy) in the [Appendix](#appendix) at the bottom of the tutorial.
 
@@ -72,7 +72,28 @@ Once you've run the command and generated the output file, you should be able to
 
 ### 3. Prepare the System for MD
 
+#### 3.1 Create the Topology File
+The first thing needed to prepare the system for MD is to create a topology file. This file will contain all the information about the protein system as defined by the parameters in the forcefield. A forcefield contains all the information describing the interactions between atoms both within and between molecules. It allows the bonds to be represented in a mathematical way so that the motion of the atoms can be tracked and updated throughout the simulations. The forcefield that we will be using is [Charmm36](https://gromacs.bioexcel.eu/t/newest-charmm36-port-for-gromacs/868), as it is the only forcefield that has thus far incorporated support for lipid systems. This forcefield is not included automatically with the GROMACS download as many other forcefields are, so we need to include the force field files in the working directory. The files are located in the `charmm36.ff` directory, and have been specifically modified to include the definitions for the lipids we are working with.
+> **Note:** If you are working with custom lipids that are not already included in the `charmm36.ff/lipids.rtp` file, you will need to add the atom, bond, and improper information as exemplified by the other entries in `charmm36.ff/lipids.rtp`, and the information can be obtained from the [Charmm topology files for lipids](https://www.charmm-gui.org/?doc=toppar)
 
+To create the topology file, we will use the [`gmx pdb2gmx`](https://manual.gromacs.org/documentation/current/onlinehelp/gmx-pdb2gmx.html) command. The command will look something like the following. 
+```
+gmx pdb2gmx -f DotG_membrane.pdb -o system.pdb -water spce -p system.top -ff charmm36 -ignh -ter
+```
+The parameters are defined as follows:
+- `-f`: The input structure file. In this case, we are using `DotG_membrane.pdb`, which is the output file from the previous step
+- `-o`: The output structure file. `pdb2gmx` will automatically add any missing hydrogen molecules, so we need a new structure file to be used moving forward. In this case, we are using `system.pdb`, this can be any name you choose
+- `-water`: The water model to use, in this case we are using `spce`, which is a common water model used in MD simulations. 
+- `-p`: The name of the topology file to be created. This will define how many of each atom type are present in the system, and include the relevant files that define their interaction. In this case, we are calling it `system.top`, but this can be any name you choose. 
+- `-ff`: The forcefield to use. In this case, we are referencing the `charmm36` forcefield in our current directory. If you don't specify this option, then an interactive prompt will ask you to select one of the built-in forcefields
+- `-ignh`: This option ignores any hydrogen atoms in the input structure. This is important because the `pdb2gmx` command will automatically add missing hydrogen molecules, and trying to account for the hydrogen molecules that are present often causes errors. 
+- `-ter`: This option specifies that we want to specify the terminal groups manually, instead of pdb2gmx trying to guess what they are. There is a known [bug with GROMACS and Charmm36](https://gromacs.bioexcel.eu/t/newest-charmm36-port-for-gromacs/868/10) where the guessed termini will be incorrect
+
+As you run the command, you will see interactive prompts such as the following:
+
+![Local Image](/Users/caysonhamilton/Desktop/Screenshot 2025-02-17 at 19.13.24.png)
+
+In response to these prompts, you should always select the default option by entering `0` and pressing enter. However, if the `0` option is `MET1`, then you **MUST** select the second option, or input `1`. Otherwise errors will be thrown about unrecognized molecules. 
 
 
 

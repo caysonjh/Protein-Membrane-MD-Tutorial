@@ -99,17 +99,19 @@ If you see the following prompt, then you have successfully created the topology
 
 ![Local Image](images/topology_success.png)
 
+You will also see numerous `.itp` files created in the directory. These files contain information about the interactions between the atoms as parsed by `pdb2gmx`.
+
 #### 3.2 Create the Simulation Box
 
 The next step is to create the simulation box. We will define the size of the box we are using, which will determine how many solvent molecules are added later to fill the space. We will use the [`gmx editconf`](https://manual.gromacs.org/current/onlinehelp/gmx-editconf.html) command for this: 
 ```
-gmx editconf -f system.pdb -o system_box.pdb -bt cubic -box 30
+gmx editconf -f system.pdb -o system_box.pdb -bt cubic -box 32
 ```
 Here we define the parameters: 
 - `-f`: The input structure file. In this case, we are using `system.pdb`, the output file from the previous step
 - `-o`: The output structure file. In this case, we are using `system_box.pdb`
 - `-bt`: The type of box to create. In this case, we are using a cubic box, but other options are available
-- `-box`: The size of the box to create. In this case, we are using a box size of 30 nm, which is the same width as the membrane we created. 
+- `-box`: The size of the box to create. In this case, we are using a box size of 30 nm, which is the same width as the membrane we created, plus a small buffer to avoid overlapping atoms. 
 
 The box will have periodic boundary conditions, so we want the box the exact width of the membrane so that the lipids interact across the barrier of the box and we get an accurate representation of what would be a much wider membrane. 
 
@@ -132,13 +134,77 @@ Before we proceed to simulation, we need to add ions to neutralize the charge of
 gmx grompp -f ions.mdp -c system_solv.pdb -p system.top -o ions.tpr
 echo SOL | gmx genion -s ions.tpr -o system_ions.pdb -p system.top -pname NA -nname CL -neutral
 ```
-One input to `grompp` is a file called `ions.mdp` (mdp stands for molecular dynamics parameters and is essentially a settings file) that contains information on ions to insert. 
 
-The `echo SOL` section of the command tells `genion` that, in order to insert the ions into the system, we should replace the solvent molecules. We are specifying that we want to use NA (sodium) and CL (chloride) as our ions and we want the end confirmation to be neutral. 
+The parameters for `grompp` are:
+- `-f`: The input mdp (molecular dynamics parameters) file. In this case, we are using `ions.mdp`, which contains the parameters for the ion addition.  
+- `-c`: The input structure file. In this case, we are using `system_solv.pdb`, the output file from the previous step
+- `-p`: The topology file to use. This will be updated to include the ions that are added
+- `-o`: The run file to be created that `genion` will use.
+
+The parameters for `genion` are:
+- `-s`: The input run file. We are using `ions.tpr`, the output from `grompp`
+- `-o`: The output structure file. In this case, we are using `system_ions.pdb`, which will contain the final structure after the ions are added
+- `-p`: The topology file to use.
+- `-pname`: The name of the positive ion to add. In this case, we are using `NA`, which is sodium
+- `-nname`: The name of the negative ion to add. In this case, we are using `CL`, which is chloride
+- `-neutral`: This option tells `genion` to neutralize the system. This means that it will add enough ions to ensure that the total charge of the system is zero.
+
+The `echo SOL` section of the command tells `genion` that, in order to insert the ions into the system, we should replace the solvent molecules. 
 
 ### 4. Energy Minimization
 
+The next step is to run an energy minimization. This will ensure that the system is at the lowest possible energy configuration, which is important for ensuring that the production run will be accurate. We will again use [`gmx grompp`](https://manual.gromacs.org/current/onlinehelp/gmx-grompp.html) to create a `.tpr` run file and then we will use ['gmx mdrun'](https://manual.gromacs.org/current/onlinehelp/gmx-mdrun.html) to run the minimization. 
+```
+gmx grompp -f em.mdp -c system_ions.pdb -p system.top -o em.tpr 
+gmx mdrun -s em.tpr -v -c em.pdb -o em.trr
+```
+The parameters for `grompp` are: 
+- `-f`: The input mdp file. In this case, we are using `em.mdp`, which contains the parameters for the energy minimization. This file is included in the repository and can be modified according to the [MDP Options](https://manual.gromacs.org/current/user-guide/mdp-options.html) to customize your runs
+- `-c`: The input structure file. In this case, we are using `system_ions.pdb`, the output file from the previous step
+- `-p`: The topology file to use. 
+- `-o`: The run file to be created that `mdrun` will use. 
 
+The parameters for `mdrun` are: 
+- `-s`: The input run file. In this case, we are using `em.tpr`, the output from `grompp`
+- `-v`: This option tells `mdrun` to be verbose and print out the progress of the run
+- `-c`: The output structure file. In this case, we are using `em.pdb`, which will contain the final structure after the energy minimization
+- `-o`: The output trajectory file. In this case, we are using `em.trr`, which will contain the trajectory of the energy minimization run
+
+### 5. Equilibration
+
+Following the energy minimization, we need to run an equilibration step to bring the system to a stable state, ensuring thermal equilibrium and a relaxed structure. We will again use [`gmx grompp`](https://manual.gromacs.org/current/onlinehelp/gmx-grompp.html) to create a `.tpr` run file and then we will use [`gmx mdrun`](https://manual.gromacs.org/current/onlinehelp/gmx-mdrun.html) to run the equilibration.
+```
+gmx grompp -f eq.mdp -c system_ions.pdb -p system.top -o eq.tpr
+gmx mdrun -s eq.tpr -v -c eq.pdb -o eq.trr
+```
+
+The parameters for equilibration largely mirror those of energy minimization, so specific details will be omitted. The only difference lies in the different parameter specifications in `eq.mdp`
+
+### 6. Production MD Run 
+
+Once the system is minimized and equilibrated, we are ready to run the production MD run, which is the actual simulation we will be analyzing the trajectory of. Once again we will use [`gmx grompp`](https://manual.gromacs.org/current/onlinehelp/gmx-grompp.html) and [`gmx mdrun`](https://manual.gromacs.org/current/onlinehelp/gmx-mdrun.html).
+```
+gmx grompp -f md.mdp -c eq.pdb -p system.top -o md.tpr
+gmx mdrun -deffnm md -v 
+```
+The only difference we see in these parameters is the use of `-deffnm`, which specifies the default name we are using for each of the files in the simulation. It tells to `mdrun` to look for `md.tpr` as the input run file, and also to use `md` as the filename for each of the output files. Once this has run successfully, you should find a `md.xtc` file which contains the simulation trajectory.
+
+### 7. Prepare for Visualization
+
+These files generated by the production run are very large because the addition of solvent greatly increases the total number of atoms. Before we visualize the trajectory in ChimeraX we need to separate the proteins and ligands from the solvent in the structure and trajectory files. This can be done using [`gmx trjconv`](https://manual.gromacs.org/current/onlinehelp/gmx-trjconv.html).
+```
+gmx trjconv -f md.xtc -o out.xtc -pbc nojump
+gmx trjconv -f eq.pdb -s md.pdb -o out.pdb
+```
+The `-pdb nojump` option specifies that if, at any point in the simulation, the protein has moved across the periodic boundary condition, then the protein should remain intact in the visualization and not jump to the other side of the box. 
+
+Each of these commands will open a interactive prompt asking which section of the system you want to include in the output file. Select the option for `non-Water`.
+
+### 8. Visualize the Trajectory in ChimeraX
+
+Now that we have the prepared output files, you can open the `out.pdb` and `out.xtc` files in ChimeraX. 
+
+Congrats, you have successfully run a protein-membrane MD simulation!
 
 ## Appendix
 

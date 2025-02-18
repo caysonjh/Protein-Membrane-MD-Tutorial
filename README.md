@@ -91,12 +91,52 @@ The parameters are defined as follows:
 
 As you run the command, you will see interactive prompts such as the following:
 
-![Local Image](/Users/caysonhamilton/Desktop/Screenshot 2025-02-17 at 19.13.24.png)
+![Local Image](images/termini_select.png)
 
 In response to these prompts, you should always select the default option by entering `0` and pressing enter. However, if the `0` option is `MET1`, then you **MUST** select the second option, or input `1`. Otherwise errors will be thrown about unrecognized molecules. 
 
+If you see the following prompt, then you have successfully created the topology file: 
+
+![Local Image](images/topology_success.png)
+
+#### 3.2 Create the Simulation Box
+
+The next step is to create the simulation box. We will define the size of the box we are using, which will determine how many solvent molecules are added later to fill the space. We will use the [`gmx editconf`](https://manual.gromacs.org/current/onlinehelp/gmx-editconf.html) command for this: 
+```
+gmx editconf -f system.pdb -o system_box.pdb -bt cubic -box 30
+```
+Here we define the parameters: 
+- `-f`: The input structure file. In this case, we are using `system.pdb`, the output file from the previous step
+- `-o`: The output structure file. In this case, we are using `system_box.pdb`
+- `-bt`: The type of box to create. In this case, we are using a cubic box, but other options are available
+- `-box`: The size of the box to create. In this case, we are using a box size of 30 nm, which is the same width as the membrane we created. 
+
+The box will have periodic boundary conditions, so we want the box the exact width of the membrane so that the lipids interact across the barrier of the box and we get an accurate representation of what would be a much wider membrane. 
+
+#### 3.3 Add Solvent
+
+The next step is to add solvent to the system. We will use the [`gmx solvate`](https://manual.gromacs.org/current/onlinehelp/gmx-solvate.html) command for this: 
+```
+gmx solvate -cp system_box.pdb -p system.top -o system_solv.pdb
+```
+We define the parameters as: 
+- `-cp`: The input structure file. In this case, we are using `system_box.pdb`, the output file from the previous step
+- `-p`: The topology file to use. This will be updated to include the solvent molecules that are added
+- `-o`: The output structure file including the newly added solvent molecules
 
 
+#### 3.4 Add Ions
+
+Before we proceed to simulation, we need to add ions to neutralize the charge of the system. Running a simulation with a charged system can cause unwanted artifacts and lead to inaccurate results, and thus should be avoided except in special cases. We will use a combination of the [`gmx grompp`](https://manual.gromacs.org/current/onlinehelp/gmx-grompp.html) and [`gmx genion`](https://manual.gromacs.org/current/onlinehelp/gmx-genion.html) command. `grompp` will create a `.tpr` file that is effectively a run file that `genion` uses to know how many ions should be included. 
+```
+gmx grompp -f ions.mdp -c system_solv.pdb -p system.top -o ions.tpr
+echo SOL | gmx genion -s ions.tpr -o system_ions.pdb -p system.top -pname NA -nname CL -neutral
+```
+One input to `grompp` is a file called `ions.mdp` (mdp stands for molecular dynamics parameters and is essentially a settings file) that contains information on ions to insert. 
+
+The `echo SOL` section of the command tells `genion` that, in order to insert the ions into the system, we should replace the solvent molecules. We are specifying that we want to use NA (sodium) and CL (chloride) as our ions and we want the end confirmation to be neutral. 
+
+### 4. Energy Minimization
 
 
 

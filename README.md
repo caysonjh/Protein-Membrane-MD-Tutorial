@@ -4,7 +4,14 @@
 
 ### The Task
 
-These instructions/tutorial will explain the process for running an atomistic simulation of a protein system embedded in a custom lipid bilayer membrane. We will first use the `memb_builder.py` python script to insert the protein into the membrane, specifying which lipids will compose the membrane and in what ratios. Then, we will prepare the protein-membrane system for molecular dynamics (MD). Each of the preparation steps and the simulation themselves will be run using the GROMACS simulation software package. After preparing the system for MD, we will first run an energy minimization step so as to ensure that the atoms are in the lowest-possible energy configuration, so that no infinite or unrealistic forces arise from overlapping atoms in the production MD run. Following the energy minimization, we will run an equilibration step that will stabilize the system parameters (temperature, pressure, volume) and ensure that the system is in a physiologically reasonable configuration. Finally, we can run the production MD run. It is from this run that we will get a trajectory file, which we can use to visualize what is happening in our simulation. The visualization of our simulation will be done using ChimeraX, the molecular visualization and analysis software.
+These instructions/tutorial will explain the process for running an atomistic simulation of a protein system embedded in a custom lipid bilayer membrane. The steps will proceed as follows: 
+1. Prepare the environment for running the simulation, including installing the required software and creating a Python environment.
+2. Use the `memb_builder.py` python script to insert the protein into the membrane, specifying which lipids will compose the membrane and in what ratios. 
+3. Prepare the protein-membrane system for molecular dynamics (MD). Each of the preparation steps and the simulation themselves will be run using the GROMACS simulation software package. 
+4. Run an energy minimization step so as to ensure that the atoms are in the lowest-possible energy configuration, so that no infinite or unrealistic forces arise from overlapping atoms in the production MD run. 
+5. Run an equilibration step that will stabilize the system parameters (temperature, pressure, volume) and ensure that the system is in a physiologically reasonable configuration. 
+6. Run the production MD run. It is from this run that we will get a trajectory file, which we can use to visualize what is happening in our simulation. 
+7. Visualize our simulation using ChimeraX, the molecular visualization and analysis software.
 
 ### Tutorial Purpose
 
@@ -131,7 +138,7 @@ We define the parameters as:
 
 Before we proceed to simulation, we need to add ions to neutralize the charge of the system. Running a simulation with a charged system can cause unwanted artifacts and lead to inaccurate results, and thus should be avoided except in special cases. We will use a combination of the [`gmx grompp`](https://manual.gromacs.org/current/onlinehelp/gmx-grompp.html) and [`gmx genion`](https://manual.gromacs.org/current/onlinehelp/gmx-genion.html) command. `grompp` will create a `.tpr` file that is effectively a run file that `genion` uses to know how many ions should be included. 
 ```
-gmx grompp -f ions.mdp -c system_solv.pdb -p system.top -o ions.tpr
+gmx grompp -f mdp_files/ions.mdp -c system_solv.pdb -p system.top -o ions.tpr
 echo SOL | gmx genion -s ions.tpr -o system_ions.pdb -p system.top -pname NA -nname CL -neutral
 ```
 
@@ -155,7 +162,7 @@ The `echo SOL` section of the command tells `genion` that, in order to insert th
 
 The next step is to run an energy minimization. This will ensure that the system is at the lowest possible energy configuration, which is important for ensuring that the production run will be accurate. We will again use [`gmx grompp`](https://manual.gromacs.org/current/onlinehelp/gmx-grompp.html) to create a `.tpr` run file and then we will use ['gmx mdrun'](https://manual.gromacs.org/current/onlinehelp/gmx-mdrun.html) to run the minimization. 
 ```
-gmx grompp -f em.mdp -c system_ions.pdb -p system.top -o em.tpr 
+gmx grompp -f mdp_files/em.mdp -c system_ions.pdb -p system.top -o em.tpr 
 gmx mdrun -s em.tpr -v -c em.pdb -o em.trr
 ```
 The parameters for `grompp` are: 
@@ -174,7 +181,7 @@ The parameters for `mdrun` are:
 
 Following the energy minimization, we need to run an equilibration step to bring the system to a stable state, ensuring thermal equilibrium and a relaxed structure. We will again use [`gmx grompp`](https://manual.gromacs.org/current/onlinehelp/gmx-grompp.html) to create a `.tpr` run file and then we will use [`gmx mdrun`](https://manual.gromacs.org/current/onlinehelp/gmx-mdrun.html) to run the equilibration.
 ```
-gmx grompp -f eq.mdp -c system_ions.pdb -p system.top -o eq.tpr
+gmx grompp -f mdp_files/eq.mdp -c system_ions.pdb -p system.top -o eq.tpr
 gmx mdrun -s eq.tpr -v -c eq.pdb -o eq.trr
 ```
 
@@ -184,7 +191,7 @@ The parameters for equilibration largely mirror those of energy minimization, so
 
 Once the system is minimized and equilibrated, we are ready to run the production MD run, which is the actual simulation we will be analyzing the trajectory of. Once again we will use [`gmx grompp`](https://manual.gromacs.org/current/onlinehelp/gmx-grompp.html) and [`gmx mdrun`](https://manual.gromacs.org/current/onlinehelp/gmx-mdrun.html).
 ```
-gmx grompp -f md.mdp -c eq.pdb -p system.top -o md.tpr
+gmx grompp -f mdp_files/md.mdp -c eq.pdb -p system.top -o md.tpr
 gmx mdrun -deffnm md -v 
 ```
 The only difference we see in these parameters is the use of `-deffnm`, which specifies the default name we are using for each of the files in the simulation. It tells to `mdrun` to look for `md.tpr` as the input run file, and also to use `md` as the filename for each of the output files. Once this has run successfully, you should find a `md.xtc` file which contains the simulation trajectory.

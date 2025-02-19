@@ -191,7 +191,7 @@ The parameters for equilibration largely mirror those of energy minimization, so
 
 Once the system is minimized and equilibrated, we are ready to run the production MD run, which is the actual simulation we will be analyzing the trajectory of. Once again we will use [`gmx grompp`](https://manual.gromacs.org/current/onlinehelp/gmx-grompp.html) and [`gmx mdrun`](https://manual.gromacs.org/current/onlinehelp/gmx-mdrun.html).
 ```
-gmx grompp -f md.mdp -c eq.pdb -p system.top -o md.tpr
+gmx grompp -f mdp_files/md.mdp -c eq.pdb -p system.top -o md.tpr
 gmx mdrun -deffnm md -v 
 ```
 The only difference we see in these parameters is the use of `-deffnm`, which specifies the default name we are using for each of the files in the simulation. It tells to `mdrun` to look for `md.tpr` as the input run file, and also to use `md` as the filename for each of the output files. Once this has run successfully, you should find a `md.xtc` file which contains the simulation trajectory.

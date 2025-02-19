@@ -13,11 +13,11 @@ constraint-algorithm     = lincs
 cutoff-scheme            = Verlet
 
 coulombtype              = PME
-rcoulomb                 = 1.2
+rcoulomb                 = 3
 
 vdwtype                  = cutoff
-rvdw                     = 1.2
-rlist                    = 1.2
+rvdw                     = 3
+rlist                    = 3
 rvdw-switch              = 1.0
 DispCorr                 = no
 

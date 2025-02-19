@@ -29,7 +29,7 @@ Similarly, if conda is installed correctly you should be able to run the followi
 ```
 conda --version
 ```
-If you see a message including your version of anaconda. 
+If you see a message including your version of anaconda, then it's been installed correctly.
 
 ChimeraX should be installed as an application on your computer, and you should be able to open it from your applications folder.
 

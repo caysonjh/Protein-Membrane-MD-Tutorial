@@ -1,5 +1,5 @@
 integrator               = steep
-nsteps                   = 5000
+nsteps                   = 7000
 dt                       = 0.002
 nstxout                  = 0
 nstfout                  = 0

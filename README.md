@@ -181,7 +181,7 @@ The parameters for `mdrun` are:
 
 Following the energy minimization, we need to run an equilibration step to bring the system to a stable state, ensuring thermal equilibrium and a relaxed structure. We will again use [`gmx grompp`](https://manual.gromacs.org/current/onlinehelp/gmx-grompp.html) to create a `.tpr` run file and then we will use [`gmx mdrun`](https://manual.gromacs.org/current/onlinehelp/gmx-mdrun.html) to run the equilibration.
 ```
-gmx grompp -f mdp_files/eq.mdp -c system_ions.pdb -p system.top -o eq.tpr
+gmx grompp -f mdp_files/eq.mdp -c em.pdb -p system.top -o eq.tpr
 gmx mdrun -s eq.tpr -v -c eq.pdb -o eq.trr
 ```
 

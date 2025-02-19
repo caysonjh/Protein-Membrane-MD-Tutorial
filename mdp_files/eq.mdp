@@ -12,6 +12,7 @@ compressed-x-precision   = 100
 
 constraints              = h-bonds
 constraint-algorithm     = lincs
+lincs-warnangle          = 90
 
 cutoff-scheme            = Verlet
 nstlist                  = 20

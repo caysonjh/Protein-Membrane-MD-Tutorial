@@ -13,6 +13,8 @@ These instructions/tutorial will explain the process for running an atomistic si
 6. Run the production MD run. It is from this run that we will get a trajectory file, which we can use to visualize what is happening in our simulation. 📈
 7. Visualize our simulation using ChimeraX, the molecular visualization and analysis software. 📺
 
+![Simulation GIF](images/tutorial_sim.gif)
+
 ### Tutorial Purpose
 
 The purpose of this tutorial is to provide an example workflow for running a protein-membrane MD simulation, and not to be comprehensive for everything that can be accomplished using these software. Each specific use-case may require slight adaptations to the general pipeline. Likewise, each use-case may also encourage certain additions to the basic simulation, such as adding external forces or introducing applied constraints. These instructions will seek to explain the most stripped-down base case, though can be used as scaffolding for more complex cases. 
@@ -231,10 +233,9 @@ Now that we have the prepared output files, you can open the `out.pdb` and `out.
 
 Congrats, you have successfully run a protein-membrane MD simulation! If you were successful, you should see a simulation that looks something like the following: 
 
-<video autoplay loop muted playsinline width="400" height="280">
-  <source src="images/tutorial_sim.mp4" type="video/mp4">
-  <source src="images/tutorial_sim.webm" type="video/webm">
-</video>
+![Simulation GIF](images/tutorial_sim.gif)
+
+You can update the `md.mdp` file to run the simulation for longer.
 
 ## Appendix
 

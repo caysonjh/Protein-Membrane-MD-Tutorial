@@ -229,7 +229,12 @@ Each of these commands will open a interactive prompt asking which section of th
 
 Now that we have the prepared output files, you can open the `out.pdb` and `out.xtc` files in ChimeraX. 
 
-Congrats, you have successfully run a protein-membrane MD simulation!
+Congrats, you have successfully run a protein-membrane MD simulation! If you were successful, you should see a simulation that looks something like the following: 
+
+<video autoplay loop muted playsinline width="400" height="280">
+  <source src="images/tutorial_sim.mp4" type="video/mp4">
+  <source src="images/tutorial_sim.webm" type="video/webm">
+</video>
 
 ## Appendix
 

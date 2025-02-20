@@ -24,7 +24,7 @@ This tutorial assumes you are using a unix-based operating system (Linux or MacO
 The tutorial will embed the protein DotG from *Legionella pneumophila*, but the process can be completed with any protein in pdb ([protein databank](https://www.rcsb.org/)) file format. The lipids to be used to generate the membrane are POPC, POPE, and POPG. As with the protein, any combination of lipid files can be used, the lipid pdb files can be obtained from the [Charmm GUI Lipid Library](https://www.charmm-gui.org/?doc=archive&lib=lipid)
 
 ##### DotG Images: 
-<img src="images/DotG_atom.png" width="380" height="280"><img src="images/DotG_protein.png" width="380" height="280">
+<img src="images/DotG_atom.png" width="400" height="280"><img src="images/DotG_protein.png" width="400" height="280">
 
 ### Software Requirements
 
@@ -81,7 +81,7 @@ For the purpose of this tutorial, the parameters are defined as follows:
 
 Once you've run the command and generated the output file, you should be able to view it in ChimeraX. You can either open ChimeraX and use the built in GUI to select the file, or just run `open output.pdb` in the terminal. Ensure that the system looks as desired before proceeding to the next step. It should look something like the following: 
 
-<img src="images/memb_diagonal.png" width="380" height="280"><img src="images/memb_horizontal.png" width="380" height="280">
+<img src="images/memb_diagonal.png" width="400" height="280"><img src="images/memb_horizontal.png" width="400" height="280">
 
 ### 3. Prepare the System for MD
 

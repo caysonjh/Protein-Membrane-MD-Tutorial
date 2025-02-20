@@ -229,7 +229,7 @@ Each of these commands will open a interactive prompt asking which section of th
 
 ### 8. Visualize the Trajectory in ChimeraX
 
-Now that we have the prepared output files, you can open the `out.pdb` and `out.xtc` files in ChimeraX. 
+Now that we have the prepared output files, you can open the `out.pdb` and `out.xtc` files in ChimeraX. If desired, you can create a video of the trajectory using the [`movie record`](https://www.cgl.ucsf.edu/chimerax/docs/user/commands/movie.html) and [`movie encode`](https://www.cgl.ucsf.edu/chimerax/docs/user/commands/movie.html) commands in ChimeraX.
 
 Congrats, you have successfully run a protein-membrane MD simulation! If you were successful, you should see a simulation that looks something like the following: 
 

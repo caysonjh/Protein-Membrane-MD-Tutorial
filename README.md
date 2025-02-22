@@ -75,13 +75,13 @@ For the purpose of this tutorial, the parameters are defined as follows:
 - `--protein`: The name of our protein pdb file. In this case, we are using `DotG.pdb`, which is a 18 member polymer that functions as the opening to the Type IV Secretion System (T4SS) in *Legionella pneumophila*. 
 - `--lipids`: The names of the lipids we want to use to compose the membrane. In this case, we are using a combination of `POPC`, `POPE`, and `POPG`, which are the lipids that compose the outer membrane of *Legionella pneumophila*.
 - `--lipid_ratios`: The ratios of the lipids we want to use to compose the membrane. In this case, we are using a ratio of 3:5:2 for POPC:POPE:POPG.
-- `--output`: The name of the output file. In this case, we are using `output.pdb`, but this can be any name you choose.
+- `--output`: The name of the output file. In this case, we are using `DotG_membrane.pdb`, but this can be any name you choose.
 - `--box_size`: The size of the simulation box to be created. In this case, we are using a box size of 300 &Aring;ngstr&ouml;ms, because this is about twice the width of DotG and gives ample space on either side of the protein.
 - `--z`: The z-coordinate where to begin inserting the membrane. In this case, we are using a z-coordinate of -90 &Aring;ngstr&ouml;ms, which aligns the membrane with the polar regions of DotG. This number was obtained through trial and error with various numbers until the membrane was inserted in the right place. 
 - `--buffer`: The amount of buffer space to leave between each lipid during insertion. In this case, we are using a buffer of 1 &Aring;ngstr&ouml;ms, which avoids major atom clashes but gives us a realistic lipid density.
 - `--z-buffer`: The amount of buffer space to leave between the upper and lower leaflet in the membrane. In this case, we are using a z-buffer of 4 &Aring;ngstr&ouml;ms, which is a good starting point for separating the two leaflets. This number was also obtained through trial and error with various numbers until the two leaflets were separated enough to avoid clashes but close enough so the two leaflets don't separate during simulation.
 
-Once you've run the command and generated the output file, you should be able to view it in ChimeraX. You can either open ChimeraX and use the built in GUI to select the file, or just run `open output.pdb` in the terminal. Ensure that the system looks as desired before proceeding to the next step. It should look something like the following: 
+Once you've run the command and generated the output file, you should be able to view it in ChimeraX. You can either open ChimeraX and use the built in GUI to select the file, or just run `open DotG_membrane.pdb` in the terminal. Ensure that the system looks as desired before proceeding to the next step. It should look something like the following: 
 
 <img src="images/memb_diagonal.png" width="400" height="280"><img src="images/memb_horizontal.png" width="400" height="280">
 

@@ -4,12 +4,13 @@
 
 ### The Task
 
-These instructions/tutorial will explain the process for running an atomistic simulation of a protein system embedded in a custom lipid bilayer membrane. The steps will proceed as follows: 
+These instructions/tutorial will explain the process for running an atomistic simulation of a protein system embedded in a custom lipid bilayer membrane. An atomistic simulation represents every atom individually in the simulation, as opposed to a coarse-grained simulation where groups of atoms are combined and represented as one single point in the simulation. The steps will proceed as follows: 
+
 1. Prepare the environment for running the simulation, including installing the required software and creating a Python environment. 👨‍💻
 2. Use the `memb_builder.py` python script to insert the protein into the membrane, specifying which lipids will compose the membrane and in what ratios. 🦠
 3. Prepare the protein-membrane system for molecular dynamics (MD). Each of the preparation steps and the simulation themselves will be run using the GROMACS simulation software package. 💻
-4. Run an energy minimization step so as to ensure that the atoms are in the lowest-possible energy configuration, so that no infinite or unrealistic forces arise from overlapping atoms in the production MD run. ⚡
-5. Run an equilibration step that will stabilize the system parameters (temperature, pressure, volume) and ensure that the system is in a physiologically reasonable configuration. 🌡️
+4. Run an energy minimization step to ensure that the atoms are in the lowest-possible energy configuration, so that no infinite or unrealistic forces arise from overlapping atoms in the production MD run. ⚡
+5. Run an equilibration step that will stabilize the system parameters (temperature, pressure, volume, etc) and ensure that the system is in a realistic configuration. 🌡️
 6. Run the production MD run. It is from this run that we will get a trajectory file, which we can use to visualize what is happening in our simulation. 📈
 7. Visualize our simulation using ChimeraX, the molecular visualization and analysis software. 📺
 
@@ -17,15 +18,17 @@ These instructions/tutorial will explain the process for running an atomistic si
 
 ### Tutorial Purpose
 
-The purpose of this tutorial is to provide an example workflow for running a protein-membrane MD simulation, and not to be comprehensive for everything that can be accomplished using these software. Each specific use-case may require slight adaptations to the general pipeline. Likewise, each use-case may also encourage certain additions to the basic simulation, such as adding external forces or introducing applied constraints. These instructions will seek to explain the most stripped-down base case, though can be used as scaffolding for more complex cases. 
+The purpose of this tutorial is to provide an example workflow for running a protein-membrane MD simulation, and not to be comprehensive for everything that can be accomplished using these software. Each specific use-case may require slight adaptations to the general pipeline. Likewise, each use-case may also allow certain additions to the basic simulation, such as adding external forces or introducing applied constraints. These instructions will seek to explain the most stripped-down base case, and can be used as scaffolding for more complex cases. 
 
 ### Prerequisites/Disclaimers
 
 This tutorial assumes you are using a unix-based operating system (Linux or MacOS). The instructions may work on Windows, but have not been tested. The instructions also assume that you are familiar with the command line interface (CLI) and basic bash commands. If you are not familiar with the command line, it is recommended to familiarize yourself with the basics of bash before proceeding.
 
-The tutorial will embed the protein DotG from *Legionella pneumophila*, but the process can be completed with any protein in pdb ([protein databank](https://www.rcsb.org/)) file format. The lipids to be used to generate the membrane are POPC, POPE, and POPG. As with the protein, any combination of lipid files can be used, the lipid pdb files can be obtained from the [Charmm GUI Lipid Library](https://www.charmm-gui.org/?doc=archive&lib=lipid)
+If you are completely unfamiliar with molecular dynamics, a basic understanding of the concepts will be helpful. Check out the following resources to get the basic idea and purpose of running these computational simulations: [Wikipedia](https://en.wikipedia.org/wiki/Molecular_dynamics), [Science Direct](https://www.sciencedirect.com/topics/chemistry/molecular-dynamics)
 
-##### DotG Images: 
+The tutorial will embed the protein DotG from a secretion system in *Legionella pneumophila*, but the process can be completed with any protein in pdb ([protein databank](https://www.rcsb.org/)) file format. The lipids we will use to generate the membrane are POPC, POPE, and POPG. As with the protein, any combination of lipid files can be used. Lipid pdb files can be obtained from the [Charmm-GUI Lipid Library](https://www.charmm-gui.org/?doc=archive&lib=lipid)
+
+##### DotG Images (atomisitc on left, overall protein structure on right): 
 <img src="images/DotG_atom.png" width="400" height="280"><img src="images/DotG_protein.png" width="400" height="280">
 
 ### Software Requirements
@@ -50,7 +53,7 @@ ChimeraX should be installed as an application on your computer, and you should 
 
 ## Instructions
 
-### 1. Prepare the Environment
+### 1. Prepare the environment
 
 To begin, clone this repository to your local machine. You can do this by running the following command in your terminal: 
 ```
@@ -62,17 +65,17 @@ conda env create -f environment.yml
 conda activate memb_builder
 ```
 ---
-### 2. Insert the Protein into the Membrane with `memb_builder.py`
+### 2. Insert the protein into the membrane with `memb_builder.py`
 
-The first step will be to insert the protein into the membrane. We will do this using the provided python script `memb_builder.py`. This script is best run through the command line and includes multiple different command line options in order to customize the embedding. When complete, the entire command will look something like the following, and is the command we will use in this tutorial. 
+The first step will be to insert the protein into the membrane. We will do this using the provided python script `memb_builder.py`. This script is best run through the command line and includes multiple different options in order to customize the embedding. When complete, the entire command will look something like the following, and is the command we will use in this tutorial. 
 ```
 python memb_builder.py --protein DotG.pdb --lipids POPC POPE POPG --lipid_ratios 3 5 2 --output DotG_membrane.pdb --box_size 300 --z -90 --buffer 1 --z-buffer 4
 ```
-For specific details on the command line options, see [Command Line Options + Customization](#command-line-options--customization-md_builderpy) in the [Appendix](#appendix) at the bottom of the tutorial.
+For specific details on all the command line options, see [Command Line Options + Customization](#command-line-options--customization-md_builderpy) in the [Appendix](#appendix) at the bottom of the tutorial.
 
 For the purpose of this tutorial, the parameters are defined as follows: 
 
-- `--protein`: The name of our protein pdb file. In this case, we are using `DotG.pdb`, which is a 18 member polymer that functions as the opening to the Type IV Secretion System (T4SS) in *Legionella pneumophila*. 
+- `--protein`: The name of our protein pdb file. In this case, we are using `DotG.pdb`, which is a 18 member polymer that functions as the opening to the [Type IV Secretion System (T4SS) in *Legionella pneumophila*](https://elifesciences.org/articles/59530). 
 - `--lipids`: The names of the lipids we want to use to compose the membrane. In this case, we are using a combination of `POPC`, `POPE`, and `POPG`, which are the lipids that compose the outer membrane of *Legionella pneumophila*.
 - `--lipid_ratios`: The ratios of the lipids we want to use to compose the membrane. In this case, we are using a ratio of 3:5:2 for POPC:POPE:POPG.
 - `--output`: The name of the output file. In this case, we are using `DotG_membrane.pdb`, but this can be any name you choose.
@@ -81,15 +84,15 @@ For the purpose of this tutorial, the parameters are defined as follows:
 - `--buffer`: The amount of buffer space to leave between each lipid during insertion. In this case, we are using a buffer of 1 &Aring;ngstr&ouml;ms, which avoids major atom clashes but gives us a realistic lipid density.
 - `--z-buffer`: The amount of buffer space to leave between the upper and lower leaflet in the membrane. In this case, we are using a z-buffer of 4 &Aring;ngstr&ouml;ms, which is a good starting point for separating the two leaflets. This number was also obtained through trial and error with various numbers until the two leaflets were separated enough to avoid clashes but close enough so the two leaflets don't separate during simulation.
 
-Once you've run the command and generated the output file, you should be able to view it in ChimeraX. You can either open ChimeraX and use the built in GUI to select the file, or just run `open DotG_membrane.pdb` in the terminal. Ensure that the system looks as desired before proceeding to the next step. It should look something like the following: 
+Once you've run the command and generated the output file, you should be able to view it in ChimeraX. You can either open ChimeraX and use the built in GUI to open the file, or just run `open DotG_membrane.pdb` in the terminal. Ensure that the system looks as desired before proceeding to the next step. It should look something like the following: 
 
 <img src="images/memb_diagonal.png" width="400" height="280"><img src="images/memb_horizontal.png" width="400" height="280">
 
-### 3. Prepare the System for MD
+### 3. Prepare the system for MD
 
-#### 3.1 Create the Topology File
-The first thing needed to prepare the system for MD is to create a topology file. This file will contain all the information about the protein system as defined by the parameters in the forcefield. A forcefield contains all the information describing the interactions between atoms both within and between molecules. It allows the bonds to be represented in a mathematical way so that the motion of the atoms can be tracked and updated throughout the simulations. The forcefield that we will be using is [Charmm36](https://gromacs.bioexcel.eu/t/newest-charmm36-port-for-gromacs/868), as it is the only forcefield that has thus far incorporated support for lipid systems. This forcefield is not included automatically with the GROMACS download as many other forcefields are, so we need to include the force field files in the working directory. The files are located in the `charmm36.ff` directory, and have been specifically modified to include the definitions for the lipids we are working with.
-> **Note:** If you are working with custom lipids that are not already included in the `charmm36.ff/lipids.rtp` file, you will need to add the atom, bond, and improper information as exemplified by the other entries in `charmm36.ff/lipids.rtp`, and the information can be obtained from the [Charmm topology files for lipids](https://www.charmm-gui.org/?doc=toppar)
+#### 3.1 Create the topology file
+The first thing needed to prepare the system for MD is to create a topology file. This file will contain all the information about the protein system as defined by the parameters in the forcefield. A forcefield contains all the information describing the interactions between atoms both within and between molecules. It allows the interactions to be represented with a mathematical formula so that the motion of the atoms can be tracked and updated throughout the simulations. The forcefield that we will be using is [Charmm36](https://gromacs.bioexcel.eu/t/newest-charmm36-port-for-gromacs/868), as it is the only forcefield that has thus far incorporated support for lipid systems. This forcefield is not included automatically with the GROMACS download as many other forcefields are, so we need to include the force field files in the working directory. The files are located in the `charmm36.ff` directory, and have been specifically modified to include the definitions for the lipids we are working with.
+> **Note:** If you are working with custom lipids that are not already included in the `charmm36.ff/lipids.rtp` file, you will need to add the atom, bond, and improper information in the same format as the other entries in `charmm36.ff/lipids.rtp`. That information can be obtained from the [Charmm topology files for lipids](https://www.charmm-gui.org/?doc=toppar)
 
 To create the topology file, we will use the [`gmx pdb2gmx`](https://manual.gromacs.org/documentation/current/onlinehelp/gmx-pdb2gmx.html) command. The command will look something like the following. 
 ```
@@ -126,7 +129,7 @@ Here we define the parameters:
 - `-f`: The input structure file. In this case, we are using `system.pdb`, the output file from the previous step
 - `-o`: The output structure file. In this case, we are using `system_box.pdb`
 - `-bt`: The type of box to create. In this case, we are using a cubic box, but other options are available
-- `-box`: The size of the box to create. In this case, we are using a box size of 30 nm, which is the same width as the membrane we created, plus a small buffer to avoid overlapping atoms. 
+- `-box`: The size of the box to create. In this case, we are using a box size of 32 nm, which is the same width as the membrane we created (300 &Aring;), plus a small buffer to avoid overlapping atoms. 
 
 The box will have periodic boundary conditions, so we want the box the exact width of the membrane so that the lipids interact across the barrier of the box and we get an accurate representation of what would be a much wider membrane. 
 
@@ -144,17 +147,17 @@ We define the parameters as:
 
 #### 3.4 Add Ions
 
-Before we proceed to simulation, we need to add ions to neutralize the charge of the system. Running a simulation with a charged system can cause unwanted artifacts and lead to inaccurate results, and thus should be avoided except in special cases. We will use a combination of the [`gmx grompp`](https://manual.gromacs.org/current/onlinehelp/gmx-grompp.html) and [`gmx genion`](https://manual.gromacs.org/current/onlinehelp/gmx-genion.html) command. `grompp` will create a `.tpr` file that is effectively a run file that `genion` uses to know how many ions should be included. 
+Before we proceed to simulation, we need to add ions to neutralize the charge of the system. Running a simulation with a charged system can cause unwanted artifacts and lead to inaccurate results, and thus should be avoided except in special cases. We will use a combination of the [`gmx grompp`](https://manual.gromacs.org/current/onlinehelp/gmx-grompp.html) and [`gmx genion`](https://manual.gromacs.org/current/onlinehelp/gmx-genion.html) command. `grompp` will create a `.tpr` file that is effectively a run file that `genion` uses to know how many ions should be inserted. 
 ```
 gmx grompp -f mdp_files/ions.mdp -c system_solv.pdb -p system.top -o ions.tpr
 echo SOL | gmx genion -s ions.tpr -o system_ions.pdb -p system.top -pname NA -nname CL -neutral
 ```
 
 The parameters for `grompp` are:
-- `-f`: The input mdp (molecular dynamics parameters) file. In this case, we are using `ions.mdp`, which contains the parameters for the ion addition.  
+- `-f`: The input mdp (molecular dynamics parameters) file. In this case, we are using `ions.mdp`, which contains the parameters for the ion addition  
 - `-c`: The input structure file. In this case, we are using `system_solv.pdb`, the output file from the previous step
 - `-p`: The topology file to use. This will be updated to include the ions that are added
-- `-o`: The run file to be created that `genion` will use.
+- `-o`: The run file to be created that `genion` will use
 
 The parameters for `genion` are:
 - `-s`: The input run file. We are using `ions.tpr`, the output from `grompp`
@@ -162,11 +165,11 @@ The parameters for `genion` are:
 - `-p`: The topology file to use.
 - `-pname`: The name of the positive ion to add. In this case, we are using `NA`, which is sodium
 - `-nname`: The name of the negative ion to add. In this case, we are using `CL`, which is chloride
-- `-neutral`: This option tells `genion` to neutralize the system. This means that it will add enough ions to ensure that the total charge of the system is zero.
+- `-neutral`: This option tells `genion` to neutralize the system. This means that it will add enough ions to ensure that the total charge of the system is zero
 
 The `echo SOL` section of the command tells `genion` that, in order to insert the ions into the system, we should replace the solvent molecules. 
 
-### 4. Energy Minimization
+### 4. Run the Energy Minimization
 
 The next step is to run an energy minimization. This will ensure that the system is at the lowest possible energy configuration, which is important for ensuring that the production run will be accurate. We will again use [`gmx grompp`](https://manual.gromacs.org/current/onlinehelp/gmx-grompp.html) to create a `.tpr` run file and then we will use ['gmx mdrun'](https://manual.gromacs.org/current/onlinehelp/gmx-mdrun.html) to run the minimization. 
 ```
@@ -176,8 +179,8 @@ gmx mdrun -s em.tpr -v -c em.pdb -o em.trr
 The parameters for `grompp` are: 
 - `-f`: The input mdp file. In this case, we are using `em.mdp`, which contains the parameters for the energy minimization. This file is included in the repository and can be modified according to the [MDP Options](https://manual.gromacs.org/current/user-guide/mdp-options.html) to customize your runs
 - `-c`: The input structure file. In this case, we are using `system_ions.pdb`, the output file from the previous step
-- `-p`: The topology file to use. 
-- `-o`: The run file to be created that `mdrun` will use. 
+- `-p`: The topology file to use
+- `-o`: The run file to be created that `mdrun` will use
 
 The parameters for `mdrun` are: 
 - `-s`: The input run file. In this case, we are using `em.tpr`, the output from `grompp`
@@ -191,7 +194,7 @@ The system will look something like this following the minimization:
 
 Notice that the lipids contracted slightly, which is the lowest energy configuration.
 
-### 5. Equilibration
+### 5. Run the Equilibration
 
 Following the energy minimization, we need to run an equilibration step to bring the system to a stable state, ensuring thermal equilibrium and a relaxed structure. We will again use [`gmx grompp`](https://manual.gromacs.org/current/onlinehelp/gmx-grompp.html) to create a `.tpr` run file and then we will use [`gmx mdrun`](https://manual.gromacs.org/current/onlinehelp/gmx-mdrun.html) to run the equilibration.
 ```
@@ -207,7 +210,7 @@ The system will look something like this following the equilibration:
 
 Notice that the lipids are no longer ordered in a perfect grid pattern, and have taken on a more natural configuration.
 
-### 6. Production MD Run 
+### 6. Run the Production MD Run 
 
 Once the system is minimized and equilibrated, we are ready to run the production MD run, which is the actual simulation we will be analyzing the trajectory of. Once again we will use [`gmx grompp`](https://manual.gromacs.org/current/onlinehelp/gmx-grompp.html) and [`gmx mdrun`](https://manual.gromacs.org/current/onlinehelp/gmx-mdrun.html).
 ```
@@ -229,13 +232,17 @@ Each of these commands will open a interactive prompt asking which section of th
 
 ### 8. Visualize the Trajectory in ChimeraX
 
-Now that we have the prepared output files, you can open the `out.pdb` and `out.xtc` files in ChimeraX. If desired, you can create a video of the trajectory using the [`movie record`](https://www.cgl.ucsf.edu/chimerax/docs/user/commands/movie.html) and [`movie encode`](https://www.cgl.ucsf.edu/chimerax/docs/user/commands/movie.html) commands in ChimeraX.
+Now that we have the prepared output files, you can open the `out.pdb` and `out.xtc` files in ChimeraX. If desired, you can create a video of the trajectory using the [`movie record`](https://www.cgl.ucsf.edu/chimerax/docs/user/commands/movie.html) and [`movie encode`](https://www.cgl.ucsf.edu/chimerax/docs/user/commands/movie.html) commands in ChimeraX, see the included links for how to best record a movie.
 
 Congrats, you have successfully run a protein-membrane MD simulation! If you were successful, you should see a simulation that looks something like the following: 
 
 ![Simulation GIF](images/tutorial_sim.gif)
 
-You can update the `md.mdp` file to run the simulation for longer.
+You can update the `md.mdp` file to run the simulation for longer. 
+
+## Conclusion
+
+Using this simulation we can analyze the movement and interactions between the lipids and the protein. This can provide incredible insight into the function of these machines that are much too small to observe such intricate details. MD plays a very important role in the process of drug design, allowing us to understand what is required for molecular machines to function as well as testing potential drug candidates to see if indeed have the desired effect. This greatly increases the efficiency of the drug design pipeline, functioning as an effective filter before drug candidates begin clinical testing. 
 
 ## Appendix
 

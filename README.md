@@ -33,7 +33,7 @@ The tutorial will embed the protein DotG from a secretion system in *Legionella 
 
 ### Software Requirements
 
-Installation of GROMACS and ChimeraX should precede beginning the instructions. Instructions for installation of these software can be found at the following links: [GROMACS Installation](https://manual.gromacs.org/2024.4/install-guide/index.html), [ChimeraX Installation (click "Other releases" for Linux/Windows)](https://www.cgl.ucsf.edu/chimerax/download.html). Another software that will be required is the python package manager anaconda, so [install anaconda](https://docs.anaconda.com/anaconda/install/) for your specific operating system if you don't already have it installed. 
+Installation of GROMACS and ChimeraX should precede beginning the instructions. Instructions for installation of these software can be found at the following links: [GROMACS Installation](https://manual.gromacs.org/2024.4/install-guide/index.html), [ChimeraX Installation (click "Other releases" for Linux/Windows)](https://www.cgl.ucsf.edu/chimerax/download.html). Installing GROMACS with gpu support is recommended as it will greatly speed-up the simulations. Another software that will be required is the python package manager anaconda, so [install anaconda](https://docs.anaconda.com/anaconda/install/) for your specific operating system if you don't already have it installed. 
 
 To ensure that GROMACS is installed correctly, run the following command in the terminal:
 ```
